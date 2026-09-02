@@ -65,7 +65,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             const SizedBox(height: 24),
             _sectionLabel(context, 'Card', optional: ' (optional)'),
             const SizedBox(height: 10),
-            _cardSelector(context, cardList),
+            // _cardSelector(context, cardList),
             const SizedBox(height: 24),
             _sectionLabel(context, 'Amount'),
             const SizedBox(height: 10),

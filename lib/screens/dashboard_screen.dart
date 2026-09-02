@@ -1,3 +1,4 @@
+import 'package:budget_tracker/database/app_database.dart';
 import 'package:budget_tracker/screens/add_card_screen.dart';
 import 'package:budget_tracker/screens/add_transaction_screen.dart';
 import 'package:budget_tracker/screens/account_screen.dart';
@@ -13,50 +14,57 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const income = 30000.00;
-    const expenses = 18450.00;
+    final state = AppScope.of(context);
 
-    final accounts = [
-      const _Account(
-        name: 'Maya',
-        type: 'E-Wallet',
-        balance: 5000,
-        paletteIndex: 1,
-        icon: Icons.account_balance_wallet_rounded,
-      ),
-      const _Account(
-        name: 'GCash',
-        type: 'E-Wallet',
-        balance: 2450,
-        paletteIndex: 5,
-        icon: Icons.account_balance_wallet_rounded,
-      ),
-      const _Account(
-        name: 'BPI',
-        type: 'E-Wallet',
-        balance: 2450,
-        paletteIndex: 3,
-        icon: Icons.account_balance_wallet_rounded,
-      ),
-    ];
-    final creditAccounts = [
-      const _Account(
-        name: 'PNB',
-        type: 'Credit Card',
-        balance: 12450,
-        limit: 25000,
-        paletteIndex: 0,
-        icon: Icons.credit_card_rounded,
-      ),
-      const _Account(
-        name: 'UnionBank',
-        type: 'Credit Card',
-        balance: 5000,
-        limit: 35000,
-        paletteIndex: 4,
-        icon: Icons.credit_card_rounded,
-      ),
-    ];
+    final List<Account> accounts = state.accounts;
+    final List<Account> creditAccounts = state.creditCards;
+    // final transactions = state.transactions;
+
+    double income = state.income;
+    double expenses = state.expenses;
+    double availableToSpend = state.income - state.expenses;
+
+    // final accounts = [
+    //   const _Account(
+    //     name: 'Maya',
+    //     type: 'E-Wallet',
+    //     balance: 5000,
+    //     paletteIndex: 1,
+    //     icon: Icons.account_balance_wallet_rounded,
+    //   ),
+    //   const _Account(
+    //     name: 'GCash',
+    //     type: 'E-Wallet',
+    //     balance: 2450,
+    //     paletteIndex: 5,
+    //     icon: Icons.account_balance_wallet_rounded,
+    //   ),
+    //   const _Account(
+    //     name: 'BPI',
+    //     type: 'E-Wallet',
+    //     balance: 2450,
+    //     paletteIndex: 3,
+    //     icon: Icons.account_balance_wallet_rounded,
+    //   ),
+    // ];
+    // final creditAccounts = [
+    //   const _Account(
+    //     name: 'PNB',
+    //     type: 'Credit Card',
+    //     balance: 12450,
+    //     limit: 25000,
+    //     paletteIndex: 0,
+    //     icon: Icons.credit_card_rounded,
+    //   ),
+    //   const _Account(
+    //     name: 'UnionBank',
+    //     type: 'Credit Card',
+    //     balance: 5000,
+    //     limit: 35000,
+    //     paletteIndex: 4,
+    //     icon: Icons.credit_card_rounded,
+    //   ),
+    // ];
 
     final transactions = [
       const _Transaction(
@@ -102,7 +110,7 @@ class DashboardScreen extends StatelessWidget {
                   _buildHeader(context),
 
                   const SizedBox(height: AppSpacing.lg),
-                  AvailableToSpent(),
+                  AvailableToSpent(availableToSpend: availableToSpend),
                   const SizedBox(height: AppSpacing.lg),
 
                   _buildIncomeExpense(income: income, expenses: expenses),
@@ -270,7 +278,7 @@ class DashboardScreen extends StatelessWidget {
   // ACCOUNTS
   // ---------------------------------------------------------------------------
 
-  Widget _buildAccounts(List<_Account> accounts) {
+  Widget _buildAccounts(List<Account> accounts) {
     return LayoutBuilder(
       builder: (context, constraints) {
         const spacing = AppSpacing.sm;
@@ -450,7 +458,7 @@ class _MoneyTile extends StatelessWidget {
 // =============================================================================
 
 class _AccountCard extends StatelessWidget {
-  final _Account account;
+  final Account account;
 
   const _AccountCard({required this.account});
 
@@ -472,7 +480,7 @@ class _AccountCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Icon(
-                account.icon,
+                Icons.access_alarm_outlined,
                 color: Colors.white.withValues(alpha: 0.85),
                 size: 22,
               ),
@@ -509,10 +517,10 @@ class _AccountCard extends StatelessWidget {
             ),
           ),
 
-          if (account.limit != null) ...[
+          if (account.creditLimit != null) ...[
             const SizedBox(height: 5),
             Text(
-              '₱${account.limit!.toStringAsFixed(0)} limit',
+              '₱${account.creditLimit!.toStringAsFixed(0)} limit',
               style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.5),
                 fontSize: 10,
@@ -604,24 +612,6 @@ class _TransactionTile extends StatelessWidget {
 // =============================================================================
 // MODELS — SAMPLE ONLY
 // =============================================================================
-
-class _Account {
-  final String name;
-  final String type;
-  final double balance;
-  final double? limit;
-  final int paletteIndex;
-  final IconData icon;
-
-  const _Account({
-    required this.name,
-    required this.type,
-    required this.balance,
-    this.limit,
-    required this.paletteIndex,
-    required this.icon,
-  });
-}
 
 class _Transaction {
   final String title;

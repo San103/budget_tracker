@@ -1,3 +1,4 @@
+import 'package:budget_tracker/database/app_database.dart';
 import 'package:flutter/material.dart';
 
 import '../models/card_model.dart';
@@ -5,17 +6,51 @@ import '../models/transaction_model.dart';
 import '../data/sample_data.dart';
 
 class AppState extends ChangeNotifier {
+  // LIGHT AND DARK MODE
   ThemeMode _themeMode = ThemeMode.system;
 
   ThemeMode get themeMode => _themeMode;
 
-   void toggleTheme() {
+  void toggleTheme() {
     _themeMode = _themeMode == ThemeMode.dark
         ? ThemeMode.light
         : ThemeMode.dark;
 
     notifyListeners();
   }
+  //END OF LIGHT AND DARK MODE
+
+  //DATABASE FETCH
+
+  final AppDatabase database;
+
+  AppState(this.database);
+
+  List<Account> accounts = [];
+  double income = 0;
+  double expenses = 0;
+
+  Future<void> load() async {
+    accounts = await database.getAllAccounts();
+
+    income = await database.getTotalIncome();
+    expenses = await database.getTotalExpenses();
+
+    notifyListeners();
+  }
+
+  List<Account> get creditCards =>
+      List.unmodifiable(accounts.where((card) => card.type == 'credit'));
+
+  // Future<void> addTransaction() async {
+  //   await database.addTransaction();
+
+  //   await load();
+
+  //   notifyListeners();
+  // }
+
+  //END OF DB FETCH
 
   final List<CardModel> _cards = List.of(sampleCards);
   final List<TransactionModel> _transactions = List.of(sampleTransactions);
@@ -25,8 +60,8 @@ class AppState extends ChangeNotifier {
   List<CardModel> get debitCards =>
       List.unmodifiable(_cards.where((card) => card.type == CardType.debit));
 
-  List<CardModel> get creditCards =>
-      List.unmodifiable(_cards.where((card) => card.type == CardType.credit));
+  // List<CardModel> get creditCards =>
+  //     List.unmodifiable(_cards.where((card) => card.type == CardType.credit));
 
   List<TransactionModel> get transactions => List.unmodifiable(_transactions);
 

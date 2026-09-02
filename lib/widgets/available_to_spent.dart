@@ -1,9 +1,11 @@
+import 'package:budget_tracker/utils/formatters.dart';
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 
 class AvailableToSpent extends StatelessWidget {
-  const AvailableToSpent({super.key});
+  final double availableToSpend;
+  const AvailableToSpent({super.key, required this.availableToSpend});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +46,7 @@ class AvailableToSpent extends StatelessWidget {
           const SizedBox(height: 12),
 
           Text(
-            '₱7,850.00',
+           formatCurrency(availableToSpend),
             style: TextStyle(
               color: context.colors.ivory,
               fontSize: 36,
