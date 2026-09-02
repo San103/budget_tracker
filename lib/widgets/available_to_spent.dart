@@ -11,9 +11,9 @@ class AvailableToSpent extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.colors.surface,
         borderRadius: BorderRadius.circular(AppRadii.card),
-        border: Border.all(color: AppColors.hairline),
+        border: Border.all(color: context.colors.hairline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -29,10 +29,10 @@ class AvailableToSpent extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 'AVAILABLE TO SPEND',
                 style: TextStyle(
-                  color: AppColors.ivoryFaint,
+                  color: context.colors.ivoryFaint,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 1.1,
@@ -43,10 +43,10 @@ class AvailableToSpent extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          const Text(
+          Text(
             '₱7,850.00',
             style: TextStyle(
-              color: AppColors.ivory,
+              color: context.colors.ivory,
               fontSize: 36,
               fontWeight: FontWeight.w600,
               letterSpacing: -1.2,
@@ -65,7 +65,10 @@ class AvailableToSpent extends StatelessWidget {
               const SizedBox(width: 6),
               Text(
                 'You are on track this month',
-                style: TextStyle(color: AppColors.ivoryMuted, fontSize: 12.5),
+                style: TextStyle(
+                  color: context.colors.ivoryMuted,
+                  fontSize: 12.5,
+                ),
               ),
             ],
           ),
@@ -74,10 +77,10 @@ class AvailableToSpent extends StatelessWidget {
 
           ClipRRect(
             borderRadius: BorderRadius.circular(100),
-            child: const LinearProgressIndicator(
+            child: LinearProgressIndicator(
               value: 0.72,
               minHeight: 5,
-              backgroundColor: AppColors.hairline,
+              backgroundColor: context.colors.hairline,
               valueColor: AlwaysStoppedAnimation(AppColors.brass),
             ),
           ),
@@ -89,11 +92,17 @@ class AvailableToSpent extends StatelessWidget {
             children: [
               Text(
                 '₱30,000 income',
-                style: TextStyle(color: AppColors.ivoryFaint, fontSize: 11),
+                style: TextStyle(
+                  color: context.colors.ivoryFaint,
+                  fontSize: 11,
+                ),
               ),
               Text(
                 '₱18,450 spent',
-                style: TextStyle(color: AppColors.ivoryFaint, fontSize: 11),
+                style: TextStyle(
+                  color: context.colors.ivoryFaint,
+                  fontSize: 11,
+                ),
               ),
             ],
           ),

@@ -1,6 +1,7 @@
 import 'package:budget_tracker/screens/add_card_screen.dart';
 import 'package:budget_tracker/screens/add_transaction_screen.dart';
 import 'package:budget_tracker/screens/account_screen.dart';
+import 'package:budget_tracker/state/app_scope.dart';
 import 'package:budget_tracker/utils/formatters.dart';
 import 'package:budget_tracker/widgets/available_to_spent.dart';
 import 'package:flutter/material.dart';
@@ -140,7 +141,7 @@ class DashboardScreen extends StatelessWidget {
 
                   const SizedBox(height: AppSpacing.sm),
 
-                  _buildTransactions(transactions),
+                  _buildTransactions(context, transactions),
                 ]),
               ),
             ),
@@ -167,6 +168,7 @@ class DashboardScreen extends StatelessWidget {
   // ---------------------------------------------------------------------------
 
   Widget _buildHeader(BuildContext context) {
+    final appState = AppScope.of(context);
     return Row(
       children: [
         Expanded(
@@ -186,17 +188,41 @@ class DashboardScreen extends StatelessWidget {
           ),
         ),
 
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(AppRadii.button),
+            onTap: appState.toggleTheme,
+            child: Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: context.colors.surfaceRaised,
+                borderRadius: BorderRadius.circular(AppRadii.button),
+                border: Border.all(color: context.colors.hairline),
+              ),
+              child: Icon(
+                Theme.of(context).brightness == Brightness.dark
+                    ? Icons.light_mode_outlined
+                    : Icons.dark_mode_outlined,
+                color: context.colors.ivoryMuted,
+                size: 21,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
         Container(
           width: 42,
           height: 42,
           decoration: BoxDecoration(
-            color: AppColors.surfaceRaised,
+            color: context.colors.surfaceRaised,
             borderRadius: BorderRadius.circular(AppRadii.button),
-            border: Border.all(color: AppColors.hairline),
+            border: Border.all(color: context.colors.hairline),
           ),
-          child: const Icon(
+          child: Icon(
             Icons.notifications_none_rounded,
-            color: AppColors.ivoryMuted,
+            color: context.colors.ivoryMuted,
             size: 21,
           ),
         ),
@@ -294,12 +320,15 @@ class DashboardScreen extends StatelessWidget {
   // TRANSACTIONS
   // ---------------------------------------------------------------------------
 
-  Widget _buildTransactions(List<_Transaction> transactions) {
+  Widget _buildTransactions(
+    BuildContext context,
+    List<_Transaction> transactions,
+  ) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.colors.surface,
         borderRadius: BorderRadius.circular(AppRadii.tile),
-        border: Border.all(color: AppColors.hairline),
+        border: Border.all(color: context.colors.hairline),
       ),
       child: Column(
         children: [
@@ -328,8 +357,8 @@ class DashboardScreen extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(
-            color: AppColors.ivory,
+          style: TextStyle(
+            color: context.colors.ivory,
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -379,9 +408,9 @@ class _MoneyTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.colors.surface,
         borderRadius: BorderRadius.circular(AppRadii.tile),
-        border: Border.all(color: AppColors.hairline),
+        border: Border.all(color: context.colors.hairline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -392,8 +421,8 @@ class _MoneyTile extends StatelessWidget {
               const SizedBox(width: 6),
               Text(
                 title,
-                style: const TextStyle(
-                  color: AppColors.ivoryMuted,
+                style: TextStyle(
+                  color: context.colors.ivoryMuted,
                   fontSize: 12,
                 ),
               ),
@@ -404,8 +433,8 @@ class _MoneyTile extends StatelessWidget {
 
           Text(
             formatCurrency(amount),
-            style: const TextStyle(
-              color: AppColors.ivory,
+            style: TextStyle(
+              color: context.colors.ivory,
               fontSize: 17,
               fontWeight: FontWeight.w600,
             ),
@@ -518,14 +547,14 @@ class _TransactionTile extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppColors.surfaceRaised,
+              color: context.colors.surfaceRaised,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
               transaction.icon,
               color: transaction.isIncome
                   ? AppColors.positive
-                  : AppColors.ivoryMuted,
+                  : context.colors.ivoryMuted,
               size: 19,
             ),
           ),
@@ -538,8 +567,8 @@ class _TransactionTile extends StatelessWidget {
               children: [
                 Text(
                   transaction.title,
-                  style: const TextStyle(
-                    color: AppColors.ivory,
+                  style: TextStyle(
+                    color: context.colors.ivory,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
@@ -547,8 +576,8 @@ class _TransactionTile extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   transaction.category,
-                  style: const TextStyle(
-                    color: AppColors.ivoryFaint,
+                  style: TextStyle(
+                    color: context.colors.ivoryFaint,
                     fontSize: 11,
                   ),
                 ),
@@ -561,7 +590,7 @@ class _TransactionTile extends StatelessWidget {
             style: TextStyle(
               color: transaction.isIncome
                   ? AppColors.positive
-                  : AppColors.ivory,
+                  : context.colors.ivory,
               fontSize: 13,
               fontWeight: FontWeight.w600,
             ),

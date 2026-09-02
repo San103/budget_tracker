@@ -22,16 +22,23 @@ class _CardTrackerAppState extends State<CardTrackerApp> {
 
   @override
   Widget build(BuildContext context) {
-    return AppScope(
-      state: _appState,
-      child: MaterialApp(
-        title: 'Wallet',
-        theme: buildAppTheme(brightness: Brightness.light),
-        darkTheme: buildAppTheme(brightness: Brightness.dark),
-        debugShowCheckedModeBanner: false,
-        // theme: buildAppTheme(),
-        home: const DashboardScreen(),
-      ),
+    return AnimatedBuilder(
+      //For Light and Darkmode
+      animation: _appState,
+      builder: (context, asyncSnapshot) {
+        return AppScope(
+          state: _appState,
+          child: MaterialApp(
+            title: 'Wallet',
+            theme: buildAppTheme(brightness: Brightness.light),
+            darkTheme: buildAppTheme(brightness: Brightness.dark),
+            themeMode: _appState.themeMode,
+            debugShowCheckedModeBanner: false,
+            // theme: buildAppTheme(),
+            home: const DashboardScreen(),
+          ),
+        );
+      },
     );
   }
 }

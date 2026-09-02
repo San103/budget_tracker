@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+extension ThemeExtensions on BuildContext {
+  AppThemeColors get colors =>
+      Theme.of(this).extension<AppThemeColors>()!;
+}
 /// Design language: "Vault" — a quiet, ink-dark ledger with a single
 /// aurora-gradient signature reserved for the card faces themselves.
 /// Everything else (chrome, lists, sheets) stays disciplined charcoal/ivory

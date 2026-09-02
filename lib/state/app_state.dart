@@ -1,10 +1,22 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 import '../models/card_model.dart';
 import '../models/transaction_model.dart';
 import '../data/sample_data.dart';
 
 class AppState extends ChangeNotifier {
+  ThemeMode _themeMode = ThemeMode.system;
+
+  ThemeMode get themeMode => _themeMode;
+
+   void toggleTheme() {
+    _themeMode = _themeMode == ThemeMode.dark
+        ? ThemeMode.light
+        : ThemeMode.dark;
+
+    notifyListeners();
+  }
+
   final List<CardModel> _cards = List.of(sampleCards);
   final List<TransactionModel> _transactions = List.of(sampleTransactions);
 
