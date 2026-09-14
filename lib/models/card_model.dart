@@ -22,68 +22,62 @@ extension CardNetworkLabel on CardNetwork {
 }
 
 class CardModel {
-  final String id;
   final String bank;
-  final String holderName;
-  final String last4;
-  final CardNetwork network;
   final CardType type;
+  final String name;
+  final double balance;
+  final double? creditLimit;
+  final int lastDigit;
+  final CardNetwork network;
   final int expiryMonth;
-  final int expiryYear; // 4-digit
-  final double? creditLimit; // null for debit
-  final double currentBalance; // outstanding (credit) or spent-this-cycle (debit)
-  final double availableBalance; // for debit: account balance
-  final int statementDay; // 1-28, day of month statement is generated
-  final int dueDay; // 1-28, day of month payment is due (credit only, meaningful)
-  final List<Color> gradient;
+  final int expiryYear;
+  final int? statementDay;
+  final int? dueDay;
+  final int palettteIndex;
+  final String icon;
 
   const CardModel({
-    required this.id,
     required this.bank,
-    required this.holderName,
-    required this.last4,
-    required this.network,
     required this.type,
+    required this.name,
+    required this.balance,
+    this.creditLimit,
+    required this.lastDigit,
+    required this.network,
     required this.expiryMonth,
     required this.expiryYear,
-    this.creditLimit,
-    required this.currentBalance,
-    this.availableBalance = 0,
-    required this.statementDay,
-    required this.dueDay,
-    required this.gradient,
+    this.statementDay,
+    this.dueDay,
+    required this.palettteIndex,
+    required this.icon,
   });
 
-  CardModel copyWith({
-    double? currentBalance,
-    double? availableBalance,
-  }) {
+  CardModel updateBalance(CardModel card, double newBalance) {
     return CardModel(
-      id: id,
-      bank: bank,
-      holderName: holderName,
-      last4: last4,
-      network: network,
-      type: type,
-      expiryMonth: expiryMonth,
-      expiryYear: expiryYear,
-      creditLimit: creditLimit,
-      currentBalance: currentBalance ?? this.currentBalance,
-      availableBalance: availableBalance ?? this.availableBalance,
-      statementDay: statementDay,
-      dueDay: dueDay,
-      gradient: gradient,
+      bank: card.bank,
+      type: card.type,
+      name: card.name,
+      balance: newBalance,
+      creditLimit: card.creditLimit,
+      lastDigit: card.lastDigit,
+      network: card.network,
+      expiryMonth: card.expiryMonth,
+      expiryYear: card.expiryYear,
+      statementDay: card.statementDay,
+      dueDay: card.dueDay,
+      palettteIndex: card.palettteIndex,
+      icon: card.icon,
     );
   }
 
   double get utilization {
     if (creditLimit == null || creditLimit == 0) return 0;
-    return (currentBalance / creditLimit!).clamp(0, 1);
+    return (balance / creditLimit!).clamp(0, 1);
   }
 
   bool get isCredit => type == CardType.credit;
 
-  String get maskedNumber => '••••  ••••  ••••  $last4';
+  String get maskedNumber => '••••  ••••  ••••  $lastDigit';
 
   String get expiryLabel =>
       '${expiryMonth.toString().padLeft(2, '0')}/${(expiryYear % 100).toString().padLeft(2, '0')}';
@@ -107,28 +101,29 @@ class CardModel {
   }
 
   DateTime get nextStatementDate =>
-      _nextOccurrence(statementDay, DateTime.now());
+      _nextOccurrence(statementDay!, DateTime.now());
 
-  DateTime get nextDueDate => _nextOccurrence(dueDay, DateTime.now());
+  DateTime get nextDueDate => _nextOccurrence(dueDay!, DateTime.now());
 
   /// Start of the current billing cycle (previous statement date).
   DateTime get currentCycleStart {
     final now = DateTime.now();
-    final thisMonthDay = _clampDay(statementDay, now.month, now.year);
+    final thisMonthDay = _clampDay(statementDay!, now.month, now.year);
     final thisMonthStatement = DateTime(now.year, now.month, thisMonthDay);
     if (now.isBefore(thisMonthStatement)) {
       final prevMonth = now.month == 1 ? 12 : now.month - 1;
       final prevYear = now.month == 1 ? now.year - 1 : now.year;
-      final prevDay = _clampDay(statementDay, prevMonth, prevYear);
+      final prevDay = _clampDay(statementDay!, prevMonth, prevYear);
       return DateTime(prevYear, prevMonth, prevDay);
     }
     return thisMonthStatement;
   }
 
-  int get daysUntilDue => nextDueDate.difference(
+  int get daysUntilDue => nextDueDate
+      .difference(
         DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
-      ).inDays;
+      )
+      .inDays;
 
-  double get minimumDue =>
-      isCredit ? (currentBalance * 0.05).clamp(0, currentBalance) : 0;
+  double get minimumDue => isCredit ? (balance * 0.05).clamp(0, balance) : 0;
 }

@@ -145,87 +145,88 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   }
 
   Widget _cardSelector(BuildContext context, List<CardModel> cards) {
-    return SizedBox(
-      height: 56,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: cards.length + 1,
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
-        itemBuilder: (context, i) {
-          // Add Card button
-          if (i == cards.length) {
-            return InkWell(
-              borderRadius: BorderRadius.circular(AppRadii.pill),
-              onTap: () {},
-              child: CustomPaint(
-                painter: DashedBorderPainter(
-                  color: AppColors.hairline,
-                  radius: AppRadii.pill,
-                ),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  alignment: Alignment.center,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.add, size: 18, color: AppColors.brass),
-                      const SizedBox(width: 6),
-                      Text(
-                        'Add Card',
-                        style: TextStyle(
-                          color: AppColors.brass,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13.5,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }
+    return Container();
+    // return SizedBox(
+    //   height: 56,
+    //   child: ListView.separated(
+    //     scrollDirection: Axis.horizontal,
+    //     itemCount: cards.length + 1,
+    //     separatorBuilder: (_, __) => const SizedBox(width: 10),
+    //     itemBuilder: (context, i) {
+    //       // Add Card button
+    //       if (i == cards.length) {
+    //         return InkWell(
+    //           borderRadius: BorderRadius.circular(AppRadii.pill),
+    //           onTap: () {},
+    //           child: CustomPaint(
+    //             painter: DashedBorderPainter(
+    //               color: AppColors.hairline,
+    //               radius: AppRadii.pill,
+    //             ),
+    //             child: Container(
+    //               padding: const EdgeInsets.symmetric(horizontal: 16),
+    //               alignment: Alignment.center,
+    //               child: Row(
+    //                 mainAxisSize: MainAxisSize.min,
+    //                 children: [
+    //                   Icon(Icons.add, size: 18, color: AppColors.brass),
+    //                   const SizedBox(width: 6),
+    //                   Text(
+    //                     'Add Card',
+    //                     style: TextStyle(
+    //                       color: AppColors.brass,
+    //                       fontWeight: FontWeight.w600,
+    //                       fontSize: 13.5,
+    //                     ),
+    //                   ),
+    //                 ],
+    //               ),
+    //             ),
+    //           ),
+    //         );
+    //       }
 
-          final card = cards[i];
-          final selected = card.id == _selectedCardId;
+    //       final card = cards[i];
+    //       final selected = card.id == _selectedCardId;
 
-          return InkWell(
-            borderRadius: BorderRadius.circular(AppRadii.pill),
-            onTap: () => setState(() => _selectedCardId = card.id),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: selected
-                    ? AppColors.brass.withOpacity(0.16)
-                    : AppColors.surfaceRaised,
-                borderRadius: BorderRadius.circular(AppRadii.pill),
-                border: Border.all(
-                  color: selected ? AppColors.brass : AppColors.hairline,
-                  width: selected ? 1.5 : 1,
-                ),
-              ),
-              child: Text(
-                '${card.bank} •••${card.last4}',
-                style: TextStyle(
-                  color: selected ? AppColors.brass : AppColors.ivory,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13.5,
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
+    //       return InkWell(
+    //         borderRadius: BorderRadius.circular(AppRadii.pill),
+    //         onTap: () => setState(() => _selectedCardId = card.id),
+    //         child: Container(
+    //           padding: const EdgeInsets.symmetric(horizontal: 16),
+    //           alignment: Alignment.center,
+    //           decoration: BoxDecoration(
+    //             color: selected
+    //                 ? AppColors.brass.withOpacity(0.16)
+    //                 : AppColors.surfaceRaised,
+    //             borderRadius: BorderRadius.circular(AppRadii.pill),
+    //             border: Border.all(
+    //               color: selected ? AppColors.brass : AppColors.hairline,
+    //               width: selected ? 1.5 : 1,
+    //             ),
+    //           ),
+    //           child: Text(
+    //             '${card.bank} •••${card.last4}',
+    //             style: TextStyle(
+    //               color: selected ? AppColors.brass : AppColors.ivory,
+    //               fontWeight: FontWeight.w600,
+    //               fontSize: 13.5,
+    //             ),
+    //           ),
+    //         ),
+    //       );
+    //     },
+    //   ),
+    // );
   }
 
   Widget _typeToggle() {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: AppColors.surfaceRaised,
+        color: context.colors.surfaceRaised,
         borderRadius: BorderRadius.circular(AppRadii.pill),
-        border: Border.all(color: AppColors.hairline),
+        border: Border.all(color: context.colors.hairline),
       ),
       child: Row(
         children: [
@@ -260,7 +261,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           child: Text(
             label,
             style: TextStyle(
-              color: selected ? const Color(0xFF14161C) : AppColors.ivoryMuted,
+              color: selected
+                  ? const Color(0xFF14161C)
+                  : context.colors.ivoryMuted,
               fontWeight: FontWeight.w700,
               fontSize: 13,
             ),
@@ -415,32 +418,40 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   }
 
   void _submit() {
-    final title = _titleController.text.trim();
-    final amount = double.tryParse(_amountController.text.trim());
+    // final title = _titleController.text.trim();
+    // final amount = double.tryParse(_amountController.text.trim());
 
-    if (title.isEmpty ||
-        amount == null ||
-        amount <= 0 ||
-        _selectedCardId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please fill in a description and a valid amount.'),
-        ),
-      );
-      return;
-    }
+    // if (title.isEmpty ||
+    //     amount == null ||
+    //     amount <= 0 ||
+    //     _selectedCardId == null) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(
+    //       content: Text('Please fill in a description and a valid amount.'),
+    //     ),
+    //   );
+    //   return;
+    // }
 
     final state = AppScope.of(context);
+    // required String id,
+    // required String accountId,
+    // required String type,
+    // String? title,
+    // required String category,
+    // required double amount,
+    // required DateTime date,
+
     state.addTransaction(
-      TransactionModel(
-        id: 't_${DateTime.now().microsecondsSinceEpoch}',
-        cardId: _selectedCardId!,
-        title: title,
-        category: _selectedCategory,
-        amount: amount,
-        date: _selectedDate,
-        isCredit: _isCredit,
-      ),
+      // TransactionModel(
+      //   id: 't_${DateTime.now().microsecondsSinceEpoch}',
+      //   cardId: _selectedCardId!,
+      //   title: title,
+      //   category: _selectedCategory,
+      //   amount: amount,
+      //   date: _selectedDate,
+      //   isCredit: _isCredit,
+      // ),
     );
     Navigator.pop(context);
   }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 extension ThemeExtensions on BuildContext {
-  AppThemeColors get colors =>
-      Theme.of(this).extension<AppThemeColors>()!;
+  AppThemeColors get colors => Theme.of(this).extension<AppThemeColors>()!;
 }
+
 /// Design language: "Vault" — a quiet, ink-dark ledger with a single
 /// aurora-gradient signature reserved for the card faces themselves.
 /// Everything else (chrome, lists, sheets) stays disciplined charcoal/ivory
@@ -53,14 +53,25 @@ class AppColors {
 
   // Card face gradient presets — each a distinct "metal" personality.
   static const List<List<Color>> cardPalettes = [
-    [Color(0xFF232946), Color(0xFF4A4E9E)], // Indigo Steel
-    [Color(0xFF1F2A24), Color(0xFF3E6B52)], // Forest Vault
-    [Color(0xFF2B1E2E), Color(0xFF7B3F5E)], // Plum Reserve
-    [Color(0xFF1C1F26), Color(0xFF52586B)], // Graphite
-    [Color(0xFF2E2116), Color(0xFF8A5A2B)], // Copper Trust
-    [Color(0xFF16232B), Color(0xFF2E7C8A)], // Teal Ledger
+    [Color(0xFF232946), Color(0xFF5B6EE1)], // Indigo
+    [Color(0xFF1F2A24), Color(0xFF36A269)], // Forest
+    [Color(0xFF2B1E2E), Color(0xFFB34D7A)], // Plum
+    [Color(0xFF1C1F26), Color(0xFF667085)], // Graphite
+    [Color(0xFF2E2116), Color(0xFFC47A35)], // Copper
+    [Color(0xFF16232B), Color(0xFF35A6BA)], // Teal
+
+    [Color(0xFF172033), Color(0xFF4B82D1)], // Sapphire
+    [Color(0xFF261A14), Color(0xFF9A6042)], // Espresso
+    [Color(0xFF211B2D), Color(0xFF8557C7)], // Royal Purple
+    [Color(0xFF182A2A), Color(0xFF35A98F)], // Jade
+    [Color(0xFF29251A), Color(0xFFC39A32)], // Gold
+    [Color(0xFF20252B), Color(0xFF66829A)], // Slate
+    [Color(0xFF29181B), Color(0xFFBC1D3D)], // Ruby
+    [Color(0xFF15252A), Color(0xFF299BC0)], // Ocean
+    [Color(0xFF24201B), Color(0xFF9A6A3A)], // Walnut
+    [Color(0xFF1B2029), Color(0xFF5278D4)], // Midnight Blue
   ];
-}
+} //[Color(0xFF2B1E2E), Color.fromARGB(255, 188, 29, 29)],
 
 class AppRadii {
   AppRadii._();

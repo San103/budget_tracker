@@ -10,8 +10,21 @@ class $AccountsTable extends Accounts with TableInfo<$AccountsTable, Account> {
   $AccountsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
     'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _bankMeta = const VerificationMeta('bank');
+  @override
+  late final GeneratedColumn<String> bank = GeneratedColumn<String>(
+    'bank',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -58,6 +71,70 @@ class $AccountsTable extends Accounts with TableInfo<$AccountsTable, Account> {
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _lastDigitMeta = const VerificationMeta(
+    'lastDigit',
+  );
+  @override
+  late final GeneratedColumn<int> lastDigit = GeneratedColumn<int>(
+    'last_digit',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _networkMeta = const VerificationMeta(
+    'network',
+  );
+  @override
+  late final GeneratedColumn<String> network = GeneratedColumn<String>(
+    'network',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _expiryMonthMeta = const VerificationMeta(
+    'expiryMonth',
+  );
+  @override
+  late final GeneratedColumn<int> expiryMonth = GeneratedColumn<int>(
+    'expiry_month',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _expiryYearMeta = const VerificationMeta(
+    'expiryYear',
+  );
+  @override
+  late final GeneratedColumn<int> expiryYear = GeneratedColumn<int>(
+    'expiry_year',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _statementDayMeta = const VerificationMeta(
+    'statementDay',
+  );
+  @override
+  late final GeneratedColumn<int> statementDay = GeneratedColumn<int>(
+    'statement_day',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dueDayMeta = const VerificationMeta('dueDay');
+  @override
+  late final GeneratedColumn<int> dueDay = GeneratedColumn<int>(
+    'due_day',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _paletteIndexMeta = const VerificationMeta(
     'paletteIndex',
   );
@@ -97,10 +174,17 @@ class $AccountsTable extends Accounts with TableInfo<$AccountsTable, Account> {
   @override
   List<GeneratedColumn> get $columns => [
     id,
+    bank,
     name,
     type,
     balance,
     creditLimit,
+    lastDigit,
+    network,
+    expiryMonth,
+    expiryYear,
+    statementDay,
+    dueDay,
     paletteIndex,
     icon,
     isActive,
@@ -119,8 +203,14 @@ class $AccountsTable extends Accounts with TableInfo<$AccountsTable, Account> {
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('bank')) {
+      context.handle(
+        _bankMeta,
+        bank.isAcceptableOrUnknown(data['bank']!, _bankMeta),
+      );
     } else if (isInserting) {
-      context.missing(_idMeta);
+      context.missing(_bankMeta);
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -151,6 +241,50 @@ class $AccountsTable extends Accounts with TableInfo<$AccountsTable, Account> {
           data['credit_limit']!,
           _creditLimitMeta,
         ),
+      );
+    }
+    if (data.containsKey('last_digit')) {
+      context.handle(
+        _lastDigitMeta,
+        lastDigit.isAcceptableOrUnknown(data['last_digit']!, _lastDigitMeta),
+      );
+    }
+    if (data.containsKey('network')) {
+      context.handle(
+        _networkMeta,
+        network.isAcceptableOrUnknown(data['network']!, _networkMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_networkMeta);
+    }
+    if (data.containsKey('expiry_month')) {
+      context.handle(
+        _expiryMonthMeta,
+        expiryMonth.isAcceptableOrUnknown(
+          data['expiry_month']!,
+          _expiryMonthMeta,
+        ),
+      );
+    }
+    if (data.containsKey('expiry_year')) {
+      context.handle(
+        _expiryYearMeta,
+        expiryYear.isAcceptableOrUnknown(data['expiry_year']!, _expiryYearMeta),
+      );
+    }
+    if (data.containsKey('statement_day')) {
+      context.handle(
+        _statementDayMeta,
+        statementDay.isAcceptableOrUnknown(
+          data['statement_day']!,
+          _statementDayMeta,
+        ),
+      );
+    }
+    if (data.containsKey('due_day')) {
+      context.handle(
+        _dueDayMeta,
+        dueDay.isAcceptableOrUnknown(data['due_day']!, _dueDayMeta),
       );
     }
     if (data.containsKey('palette_index')) {
@@ -186,8 +320,12 @@ class $AccountsTable extends Accounts with TableInfo<$AccountsTable, Account> {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Account(
       id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}id'],
+      )!,
+      bank: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}bank'],
       )!,
       name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -204,6 +342,30 @@ class $AccountsTable extends Accounts with TableInfo<$AccountsTable, Account> {
       creditLimit: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}credit_limit'],
+      ),
+      lastDigit: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}last_digit'],
+      ),
+      network: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}network'],
+      )!,
+      expiryMonth: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}expiry_month'],
+      ),
+      expiryYear: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}expiry_year'],
+      ),
+      statementDay: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}statement_day'],
+      ),
+      dueDay: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}due_day'],
       ),
       paletteIndex: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -227,20 +389,34 @@ class $AccountsTable extends Accounts with TableInfo<$AccountsTable, Account> {
 }
 
 class Account extends DataClass implements Insertable<Account> {
-  final String id;
+  final int id;
+  final String bank;
   final String name;
   final String type;
   final double balance;
   final double? creditLimit;
+  final int? lastDigit;
+  final String network;
+  final int? expiryMonth;
+  final int? expiryYear;
+  final int? statementDay;
+  final int? dueDay;
   final int paletteIndex;
   final String icon;
   final bool isActive;
   const Account({
     required this.id,
+    required this.bank,
     required this.name,
     required this.type,
     required this.balance,
     this.creditLimit,
+    this.lastDigit,
+    required this.network,
+    this.expiryMonth,
+    this.expiryYear,
+    this.statementDay,
+    this.dueDay,
     required this.paletteIndex,
     required this.icon,
     required this.isActive,
@@ -248,12 +424,29 @@ class Account extends DataClass implements Insertable<Account> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
+    map['id'] = Variable<int>(id);
+    map['bank'] = Variable<String>(bank);
     map['name'] = Variable<String>(name);
     map['type'] = Variable<String>(type);
     map['balance'] = Variable<double>(balance);
     if (!nullToAbsent || creditLimit != null) {
       map['credit_limit'] = Variable<double>(creditLimit);
+    }
+    if (!nullToAbsent || lastDigit != null) {
+      map['last_digit'] = Variable<int>(lastDigit);
+    }
+    map['network'] = Variable<String>(network);
+    if (!nullToAbsent || expiryMonth != null) {
+      map['expiry_month'] = Variable<int>(expiryMonth);
+    }
+    if (!nullToAbsent || expiryYear != null) {
+      map['expiry_year'] = Variable<int>(expiryYear);
+    }
+    if (!nullToAbsent || statementDay != null) {
+      map['statement_day'] = Variable<int>(statementDay);
+    }
+    if (!nullToAbsent || dueDay != null) {
+      map['due_day'] = Variable<int>(dueDay);
     }
     map['palette_index'] = Variable<int>(paletteIndex);
     map['icon'] = Variable<String>(icon);
@@ -264,12 +457,29 @@ class Account extends DataClass implements Insertable<Account> {
   AccountsCompanion toCompanion(bool nullToAbsent) {
     return AccountsCompanion(
       id: Value(id),
+      bank: Value(bank),
       name: Value(name),
       type: Value(type),
       balance: Value(balance),
       creditLimit: creditLimit == null && nullToAbsent
           ? const Value.absent()
           : Value(creditLimit),
+      lastDigit: lastDigit == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastDigit),
+      network: Value(network),
+      expiryMonth: expiryMonth == null && nullToAbsent
+          ? const Value.absent()
+          : Value(expiryMonth),
+      expiryYear: expiryYear == null && nullToAbsent
+          ? const Value.absent()
+          : Value(expiryYear),
+      statementDay: statementDay == null && nullToAbsent
+          ? const Value.absent()
+          : Value(statementDay),
+      dueDay: dueDay == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dueDay),
       paletteIndex: Value(paletteIndex),
       icon: Value(icon),
       isActive: Value(isActive),
@@ -282,11 +492,18 @@ class Account extends DataClass implements Insertable<Account> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Account(
-      id: serializer.fromJson<String>(json['id']),
+      id: serializer.fromJson<int>(json['id']),
+      bank: serializer.fromJson<String>(json['bank']),
       name: serializer.fromJson<String>(json['name']),
       type: serializer.fromJson<String>(json['type']),
       balance: serializer.fromJson<double>(json['balance']),
       creditLimit: serializer.fromJson<double?>(json['creditLimit']),
+      lastDigit: serializer.fromJson<int?>(json['lastDigit']),
+      network: serializer.fromJson<String>(json['network']),
+      expiryMonth: serializer.fromJson<int?>(json['expiryMonth']),
+      expiryYear: serializer.fromJson<int?>(json['expiryYear']),
+      statementDay: serializer.fromJson<int?>(json['statementDay']),
+      dueDay: serializer.fromJson<int?>(json['dueDay']),
       paletteIndex: serializer.fromJson<int>(json['paletteIndex']),
       icon: serializer.fromJson<String>(json['icon']),
       isActive: serializer.fromJson<bool>(json['isActive']),
@@ -296,11 +513,18 @@ class Account extends DataClass implements Insertable<Account> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
+      'id': serializer.toJson<int>(id),
+      'bank': serializer.toJson<String>(bank),
       'name': serializer.toJson<String>(name),
       'type': serializer.toJson<String>(type),
       'balance': serializer.toJson<double>(balance),
       'creditLimit': serializer.toJson<double?>(creditLimit),
+      'lastDigit': serializer.toJson<int?>(lastDigit),
+      'network': serializer.toJson<String>(network),
+      'expiryMonth': serializer.toJson<int?>(expiryMonth),
+      'expiryYear': serializer.toJson<int?>(expiryYear),
+      'statementDay': serializer.toJson<int?>(statementDay),
+      'dueDay': serializer.toJson<int?>(dueDay),
       'paletteIndex': serializer.toJson<int>(paletteIndex),
       'icon': serializer.toJson<String>(icon),
       'isActive': serializer.toJson<bool>(isActive),
@@ -308,20 +532,34 @@ class Account extends DataClass implements Insertable<Account> {
   }
 
   Account copyWith({
-    String? id,
+    int? id,
+    String? bank,
     String? name,
     String? type,
     double? balance,
     Value<double?> creditLimit = const Value.absent(),
+    Value<int?> lastDigit = const Value.absent(),
+    String? network,
+    Value<int?> expiryMonth = const Value.absent(),
+    Value<int?> expiryYear = const Value.absent(),
+    Value<int?> statementDay = const Value.absent(),
+    Value<int?> dueDay = const Value.absent(),
     int? paletteIndex,
     String? icon,
     bool? isActive,
   }) => Account(
     id: id ?? this.id,
+    bank: bank ?? this.bank,
     name: name ?? this.name,
     type: type ?? this.type,
     balance: balance ?? this.balance,
     creditLimit: creditLimit.present ? creditLimit.value : this.creditLimit,
+    lastDigit: lastDigit.present ? lastDigit.value : this.lastDigit,
+    network: network ?? this.network,
+    expiryMonth: expiryMonth.present ? expiryMonth.value : this.expiryMonth,
+    expiryYear: expiryYear.present ? expiryYear.value : this.expiryYear,
+    statementDay: statementDay.present ? statementDay.value : this.statementDay,
+    dueDay: dueDay.present ? dueDay.value : this.dueDay,
     paletteIndex: paletteIndex ?? this.paletteIndex,
     icon: icon ?? this.icon,
     isActive: isActive ?? this.isActive,
@@ -329,12 +567,25 @@ class Account extends DataClass implements Insertable<Account> {
   Account copyWithCompanion(AccountsCompanion data) {
     return Account(
       id: data.id.present ? data.id.value : this.id,
+      bank: data.bank.present ? data.bank.value : this.bank,
       name: data.name.present ? data.name.value : this.name,
       type: data.type.present ? data.type.value : this.type,
       balance: data.balance.present ? data.balance.value : this.balance,
       creditLimit: data.creditLimit.present
           ? data.creditLimit.value
           : this.creditLimit,
+      lastDigit: data.lastDigit.present ? data.lastDigit.value : this.lastDigit,
+      network: data.network.present ? data.network.value : this.network,
+      expiryMonth: data.expiryMonth.present
+          ? data.expiryMonth.value
+          : this.expiryMonth,
+      expiryYear: data.expiryYear.present
+          ? data.expiryYear.value
+          : this.expiryYear,
+      statementDay: data.statementDay.present
+          ? data.statementDay.value
+          : this.statementDay,
+      dueDay: data.dueDay.present ? data.dueDay.value : this.dueDay,
       paletteIndex: data.paletteIndex.present
           ? data.paletteIndex.value
           : this.paletteIndex,
@@ -347,10 +598,17 @@ class Account extends DataClass implements Insertable<Account> {
   String toString() {
     return (StringBuffer('Account(')
           ..write('id: $id, ')
+          ..write('bank: $bank, ')
           ..write('name: $name, ')
           ..write('type: $type, ')
           ..write('balance: $balance, ')
           ..write('creditLimit: $creditLimit, ')
+          ..write('lastDigit: $lastDigit, ')
+          ..write('network: $network, ')
+          ..write('expiryMonth: $expiryMonth, ')
+          ..write('expiryYear: $expiryYear, ')
+          ..write('statementDay: $statementDay, ')
+          ..write('dueDay: $dueDay, ')
           ..write('paletteIndex: $paletteIndex, ')
           ..write('icon: $icon, ')
           ..write('isActive: $isActive')
@@ -361,10 +619,17 @@ class Account extends DataClass implements Insertable<Account> {
   @override
   int get hashCode => Object.hash(
     id,
+    bank,
     name,
     type,
     balance,
     creditLimit,
+    lastDigit,
+    network,
+    expiryMonth,
+    expiryYear,
+    statementDay,
+    dueDay,
     paletteIndex,
     icon,
     isActive,
@@ -374,95 +639,145 @@ class Account extends DataClass implements Insertable<Account> {
       identical(this, other) ||
       (other is Account &&
           other.id == this.id &&
+          other.bank == this.bank &&
           other.name == this.name &&
           other.type == this.type &&
           other.balance == this.balance &&
           other.creditLimit == this.creditLimit &&
+          other.lastDigit == this.lastDigit &&
+          other.network == this.network &&
+          other.expiryMonth == this.expiryMonth &&
+          other.expiryYear == this.expiryYear &&
+          other.statementDay == this.statementDay &&
+          other.dueDay == this.dueDay &&
           other.paletteIndex == this.paletteIndex &&
           other.icon == this.icon &&
           other.isActive == this.isActive);
 }
 
 class AccountsCompanion extends UpdateCompanion<Account> {
-  final Value<String> id;
+  final Value<int> id;
+  final Value<String> bank;
   final Value<String> name;
   final Value<String> type;
   final Value<double> balance;
   final Value<double?> creditLimit;
+  final Value<int?> lastDigit;
+  final Value<String> network;
+  final Value<int?> expiryMonth;
+  final Value<int?> expiryYear;
+  final Value<int?> statementDay;
+  final Value<int?> dueDay;
   final Value<int> paletteIndex;
   final Value<String> icon;
   final Value<bool> isActive;
-  final Value<int> rowid;
   const AccountsCompanion({
     this.id = const Value.absent(),
+    this.bank = const Value.absent(),
     this.name = const Value.absent(),
     this.type = const Value.absent(),
     this.balance = const Value.absent(),
     this.creditLimit = const Value.absent(),
+    this.lastDigit = const Value.absent(),
+    this.network = const Value.absent(),
+    this.expiryMonth = const Value.absent(),
+    this.expiryYear = const Value.absent(),
+    this.statementDay = const Value.absent(),
+    this.dueDay = const Value.absent(),
     this.paletteIndex = const Value.absent(),
     this.icon = const Value.absent(),
     this.isActive = const Value.absent(),
-    this.rowid = const Value.absent(),
   });
   AccountsCompanion.insert({
-    required String id,
+    this.id = const Value.absent(),
+    required String bank,
     required String name,
     required String type,
     this.balance = const Value.absent(),
     this.creditLimit = const Value.absent(),
+    this.lastDigit = const Value.absent(),
+    required String network,
+    this.expiryMonth = const Value.absent(),
+    this.expiryYear = const Value.absent(),
+    this.statementDay = const Value.absent(),
+    this.dueDay = const Value.absent(),
     this.paletteIndex = const Value.absent(),
     required String icon,
     this.isActive = const Value.absent(),
-    this.rowid = const Value.absent(),
-  }) : id = Value(id),
+  }) : bank = Value(bank),
        name = Value(name),
        type = Value(type),
+       network = Value(network),
        icon = Value(icon);
   static Insertable<Account> custom({
-    Expression<String>? id,
+    Expression<int>? id,
+    Expression<String>? bank,
     Expression<String>? name,
     Expression<String>? type,
     Expression<double>? balance,
     Expression<double>? creditLimit,
+    Expression<int>? lastDigit,
+    Expression<String>? network,
+    Expression<int>? expiryMonth,
+    Expression<int>? expiryYear,
+    Expression<int>? statementDay,
+    Expression<int>? dueDay,
     Expression<int>? paletteIndex,
     Expression<String>? icon,
     Expression<bool>? isActive,
-    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (bank != null) 'bank': bank,
       if (name != null) 'name': name,
       if (type != null) 'type': type,
       if (balance != null) 'balance': balance,
       if (creditLimit != null) 'credit_limit': creditLimit,
+      if (lastDigit != null) 'last_digit': lastDigit,
+      if (network != null) 'network': network,
+      if (expiryMonth != null) 'expiry_month': expiryMonth,
+      if (expiryYear != null) 'expiry_year': expiryYear,
+      if (statementDay != null) 'statement_day': statementDay,
+      if (dueDay != null) 'due_day': dueDay,
       if (paletteIndex != null) 'palette_index': paletteIndex,
       if (icon != null) 'icon': icon,
       if (isActive != null) 'is_active': isActive,
-      if (rowid != null) 'rowid': rowid,
     });
   }
 
   AccountsCompanion copyWith({
-    Value<String>? id,
+    Value<int>? id,
+    Value<String>? bank,
     Value<String>? name,
     Value<String>? type,
     Value<double>? balance,
     Value<double?>? creditLimit,
+    Value<int?>? lastDigit,
+    Value<String>? network,
+    Value<int?>? expiryMonth,
+    Value<int?>? expiryYear,
+    Value<int?>? statementDay,
+    Value<int?>? dueDay,
     Value<int>? paletteIndex,
     Value<String>? icon,
     Value<bool>? isActive,
-    Value<int>? rowid,
   }) {
     return AccountsCompanion(
       id: id ?? this.id,
+      bank: bank ?? this.bank,
       name: name ?? this.name,
       type: type ?? this.type,
       balance: balance ?? this.balance,
       creditLimit: creditLimit ?? this.creditLimit,
+      lastDigit: lastDigit ?? this.lastDigit,
+      network: network ?? this.network,
+      expiryMonth: expiryMonth ?? this.expiryMonth,
+      expiryYear: expiryYear ?? this.expiryYear,
+      statementDay: statementDay ?? this.statementDay,
+      dueDay: dueDay ?? this.dueDay,
       paletteIndex: paletteIndex ?? this.paletteIndex,
       icon: icon ?? this.icon,
       isActive: isActive ?? this.isActive,
-      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -470,7 +785,10 @@ class AccountsCompanion extends UpdateCompanion<Account> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) {
-      map['id'] = Variable<String>(id.value);
+      map['id'] = Variable<int>(id.value);
+    }
+    if (bank.present) {
+      map['bank'] = Variable<String>(bank.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
@@ -484,6 +802,24 @@ class AccountsCompanion extends UpdateCompanion<Account> {
     if (creditLimit.present) {
       map['credit_limit'] = Variable<double>(creditLimit.value);
     }
+    if (lastDigit.present) {
+      map['last_digit'] = Variable<int>(lastDigit.value);
+    }
+    if (network.present) {
+      map['network'] = Variable<String>(network.value);
+    }
+    if (expiryMonth.present) {
+      map['expiry_month'] = Variable<int>(expiryMonth.value);
+    }
+    if (expiryYear.present) {
+      map['expiry_year'] = Variable<int>(expiryYear.value);
+    }
+    if (statementDay.present) {
+      map['statement_day'] = Variable<int>(statementDay.value);
+    }
+    if (dueDay.present) {
+      map['due_day'] = Variable<int>(dueDay.value);
+    }
     if (paletteIndex.present) {
       map['palette_index'] = Variable<int>(paletteIndex.value);
     }
@@ -493,9 +829,6 @@ class AccountsCompanion extends UpdateCompanion<Account> {
     if (isActive.present) {
       map['is_active'] = Variable<bool>(isActive.value);
     }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
     return map;
   }
 
@@ -503,14 +836,20 @@ class AccountsCompanion extends UpdateCompanion<Account> {
   String toString() {
     return (StringBuffer('AccountsCompanion(')
           ..write('id: $id, ')
+          ..write('bank: $bank, ')
           ..write('name: $name, ')
           ..write('type: $type, ')
           ..write('balance: $balance, ')
           ..write('creditLimit: $creditLimit, ')
+          ..write('lastDigit: $lastDigit, ')
+          ..write('network: $network, ')
+          ..write('expiryMonth: $expiryMonth, ')
+          ..write('expiryYear: $expiryYear, ')
+          ..write('statementDay: $statementDay, ')
+          ..write('dueDay: $dueDay, ')
           ..write('paletteIndex: $paletteIndex, ')
           ..write('icon: $icon, ')
-          ..write('isActive: $isActive, ')
-          ..write('rowid: $rowid')
+          ..write('isActive: $isActive')
           ..write(')'))
         .toString();
   }
@@ -524,22 +863,26 @@ class $TransactionsTable extends Transactions
   $TransactionsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
     'id',
     aliasedName,
     false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
   );
   static const VerificationMeta _accountIdMeta = const VerificationMeta(
     'accountId',
   );
   @override
-  late final GeneratedColumn<String> accountId = GeneratedColumn<String>(
+  late final GeneratedColumn<int> accountId = GeneratedColumn<int>(
     'account_id',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES accounts (id)',
@@ -629,8 +972,6 @@ class $TransactionsTable extends Transactions
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
     }
     if (data.containsKey('account_id')) {
       context.handle(
@@ -694,11 +1035,11 @@ class $TransactionsTable extends Transactions
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Transaction(
       id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}id'],
       )!,
       accountId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}account_id'],
       )!,
       type: attachedDatabase.typeMapping.read(
@@ -735,8 +1076,8 @@ class $TransactionsTable extends Transactions
 }
 
 class Transaction extends DataClass implements Insertable<Transaction> {
-  final String id;
-  final String accountId;
+  final int id;
+  final int accountId;
   final String type;
   final String? title;
   final String category;
@@ -756,8 +1097,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['account_id'] = Variable<String>(accountId);
+    map['id'] = Variable<int>(id);
+    map['account_id'] = Variable<int>(accountId);
     map['type'] = Variable<String>(type);
     if (!nullToAbsent || title != null) {
       map['title'] = Variable<String>(title);
@@ -790,8 +1131,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Transaction(
-      id: serializer.fromJson<String>(json['id']),
-      accountId: serializer.fromJson<String>(json['accountId']),
+      id: serializer.fromJson<int>(json['id']),
+      accountId: serializer.fromJson<int>(json['accountId']),
       type: serializer.fromJson<String>(json['type']),
       title: serializer.fromJson<String?>(json['title']),
       category: serializer.fromJson<String>(json['category']),
@@ -804,8 +1145,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'accountId': serializer.toJson<String>(accountId),
+      'id': serializer.toJson<int>(id),
+      'accountId': serializer.toJson<int>(accountId),
       'type': serializer.toJson<String>(type),
       'title': serializer.toJson<String?>(title),
       'category': serializer.toJson<String>(category),
@@ -816,8 +1157,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
   }
 
   Transaction copyWith({
-    String? id,
-    String? accountId,
+    int? id,
+    int? accountId,
     String? type,
     Value<String?> title = const Value.absent(),
     String? category,
@@ -888,15 +1229,14 @@ class Transaction extends DataClass implements Insertable<Transaction> {
 }
 
 class TransactionsCompanion extends UpdateCompanion<Transaction> {
-  final Value<String> id;
-  final Value<String> accountId;
+  final Value<int> id;
+  final Value<int> accountId;
   final Value<String> type;
   final Value<String?> title;
   final Value<String> category;
   final Value<double> amount;
   final Value<DateTime> date;
   final Value<DateTime> createdAt;
-  final Value<int> rowid;
   const TransactionsCompanion({
     this.id = const Value.absent(),
     this.accountId = const Value.absent(),
@@ -906,34 +1246,30 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     this.amount = const Value.absent(),
     this.date = const Value.absent(),
     this.createdAt = const Value.absent(),
-    this.rowid = const Value.absent(),
   });
   TransactionsCompanion.insert({
-    required String id,
-    required String accountId,
+    this.id = const Value.absent(),
+    required int accountId,
     required String type,
     this.title = const Value.absent(),
     required String category,
     required double amount,
     required DateTime date,
     this.createdAt = const Value.absent(),
-    this.rowid = const Value.absent(),
-  }) : id = Value(id),
-       accountId = Value(accountId),
+  }) : accountId = Value(accountId),
        type = Value(type),
        category = Value(category),
        amount = Value(amount),
        date = Value(date);
   static Insertable<Transaction> custom({
-    Expression<String>? id,
-    Expression<String>? accountId,
+    Expression<int>? id,
+    Expression<int>? accountId,
     Expression<String>? type,
     Expression<String>? title,
     Expression<String>? category,
     Expression<double>? amount,
     Expression<DateTime>? date,
     Expression<DateTime>? createdAt,
-    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -944,20 +1280,18 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       if (amount != null) 'amount': amount,
       if (date != null) 'date': date,
       if (createdAt != null) 'created_at': createdAt,
-      if (rowid != null) 'rowid': rowid,
     });
   }
 
   TransactionsCompanion copyWith({
-    Value<String>? id,
-    Value<String>? accountId,
+    Value<int>? id,
+    Value<int>? accountId,
     Value<String>? type,
     Value<String?>? title,
     Value<String>? category,
     Value<double>? amount,
     Value<DateTime>? date,
     Value<DateTime>? createdAt,
-    Value<int>? rowid,
   }) {
     return TransactionsCompanion(
       id: id ?? this.id,
@@ -968,7 +1302,6 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       amount: amount ?? this.amount,
       date: date ?? this.date,
       createdAt: createdAt ?? this.createdAt,
-      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -976,10 +1309,10 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) {
-      map['id'] = Variable<String>(id.value);
+      map['id'] = Variable<int>(id.value);
     }
     if (accountId.present) {
-      map['account_id'] = Variable<String>(accountId.value);
+      map['account_id'] = Variable<int>(accountId.value);
     }
     if (type.present) {
       map['type'] = Variable<String>(type.value);
@@ -999,9 +1332,6 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
     return map;
   }
 
@@ -1015,8 +1345,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
           ..write('category: $category, ')
           ..write('amount: $amount, ')
           ..write('date: $date, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('rowid: $rowid')
+          ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
@@ -1035,26 +1364,38 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 }
 
 typedef $$AccountsTableCreateCompanionBuilder = AccountsCompanion Function({
-  required String id,
+  Value<int> id,
+  required String bank,
   required String name,
   required String type,
   Value<double> balance,
   Value<double?> creditLimit,
+  Value<int?> lastDigit,
+  required String network,
+  Value<int?> expiryMonth,
+  Value<int?> expiryYear,
+  Value<int?> statementDay,
+  Value<int?> dueDay,
   Value<int> paletteIndex,
   required String icon,
   Value<bool> isActive,
-  Value<int> rowid,
 });
 typedef $$AccountsTableUpdateCompanionBuilder = AccountsCompanion Function({
-  Value<String> id,
+  Value<int> id,
+  Value<String> bank,
   Value<String> name,
   Value<String> type,
   Value<double> balance,
   Value<double?> creditLimit,
+  Value<int?> lastDigit,
+  Value<String> network,
+  Value<int?> expiryMonth,
+  Value<int?> expiryYear,
+  Value<int?> statementDay,
+  Value<int?> dueDay,
   Value<int> paletteIndex,
   Value<String> icon,
   Value<bool> isActive,
-  Value<int> rowid,
 });
 
 final class $$AccountsTableReferences
@@ -1071,7 +1412,7 @@ final class $$AccountsTableReferences
     final manager = $$TransactionsTableTableManager(
       $_db,
       $_db.transactions,
-    ).filter((f) => f.accountId.id.sqlEquals($_itemColumn<String>('id')!));
+    ).filter((f) => f.accountId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_transactionsRefsTable($_db));
     return ProcessedTableManager(
@@ -1089,8 +1430,13 @@ class $$AccountsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<String> get id => $composableBuilder(
+  ColumnFilters<int> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get bank => $composableBuilder(
+    column: $table.bank,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1111,6 +1457,36 @@ class $$AccountsTableFilterComposer
 
   ColumnFilters<double> get creditLimit => $composableBuilder(
     column: $table.creditLimit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get lastDigit => $composableBuilder(
+    column: $table.lastDigit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get network => $composableBuilder(
+    column: $table.network,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get expiryMonth => $composableBuilder(
+    column: $table.expiryMonth,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get expiryYear => $composableBuilder(
+    column: $table.expiryYear,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get statementDay => $composableBuilder(
+    column: $table.statementDay,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get dueDay => $composableBuilder(
+    column: $table.dueDay,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1164,8 +1540,13 @@ class $$AccountsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<String> get id => $composableBuilder(
+  ColumnOrderings<int> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get bank => $composableBuilder(
+    column: $table.bank,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -1186,6 +1567,36 @@ class $$AccountsTableOrderingComposer
 
   ColumnOrderings<double> get creditLimit => $composableBuilder(
     column: $table.creditLimit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get lastDigit => $composableBuilder(
+    column: $table.lastDigit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get network => $composableBuilder(
+    column: $table.network,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get expiryMonth => $composableBuilder(
+    column: $table.expiryMonth,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get expiryYear => $composableBuilder(
+    column: $table.expiryYear,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get statementDay => $composableBuilder(
+    column: $table.statementDay,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get dueDay => $composableBuilder(
+    column: $table.dueDay,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -1214,8 +1625,11 @@ class $$AccountsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<String> get id =>
+  GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get bank =>
+      $composableBuilder(column: $table.bank, builder: (column) => column);
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
@@ -1230,6 +1644,30 @@ class $$AccountsTableAnnotationComposer
     column: $table.creditLimit,
     builder: (column) => column,
   );
+
+  GeneratedColumn<int> get lastDigit =>
+      $composableBuilder(column: $table.lastDigit, builder: (column) => column);
+
+  GeneratedColumn<String> get network =>
+      $composableBuilder(column: $table.network, builder: (column) => column);
+
+  GeneratedColumn<int> get expiryMonth => $composableBuilder(
+    column: $table.expiryMonth,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get expiryYear => $composableBuilder(
+    column: $table.expiryYear,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get statementDay => $composableBuilder(
+    column: $table.statementDay,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get dueDay =>
+      $composableBuilder(column: $table.dueDay, builder: (column) => column);
 
   GeneratedColumn<int> get paletteIndex => $composableBuilder(
     column: $table.paletteIndex,
@@ -1296,47 +1734,71 @@ class $$AccountsTableTableManager
               $$AccountsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<String> id = const Value.absent(),
+                Value<int> id = const Value.absent(),
+                Value<String> bank = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String> type = const Value.absent(),
                 Value<double> balance = const Value.absent(),
                 Value<double?> creditLimit = const Value.absent(),
+                Value<int?> lastDigit = const Value.absent(),
+                Value<String> network = const Value.absent(),
+                Value<int?> expiryMonth = const Value.absent(),
+                Value<int?> expiryYear = const Value.absent(),
+                Value<int?> statementDay = const Value.absent(),
+                Value<int?> dueDay = const Value.absent(),
                 Value<int> paletteIndex = const Value.absent(),
                 Value<String> icon = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
               }) => AccountsCompanion(
                 id: id,
+                bank: bank,
                 name: name,
                 type: type,
                 balance: balance,
                 creditLimit: creditLimit,
+                lastDigit: lastDigit,
+                network: network,
+                expiryMonth: expiryMonth,
+                expiryYear: expiryYear,
+                statementDay: statementDay,
+                dueDay: dueDay,
                 paletteIndex: paletteIndex,
                 icon: icon,
                 isActive: isActive,
-                rowid: rowid,
               ),
           createCompanionCallback:
               ({
-                required String id,
+                Value<int> id = const Value.absent(),
+                required String bank,
                 required String name,
                 required String type,
                 Value<double> balance = const Value.absent(),
                 Value<double?> creditLimit = const Value.absent(),
+                Value<int?> lastDigit = const Value.absent(),
+                required String network,
+                Value<int?> expiryMonth = const Value.absent(),
+                Value<int?> expiryYear = const Value.absent(),
+                Value<int?> statementDay = const Value.absent(),
+                Value<int?> dueDay = const Value.absent(),
                 Value<int> paletteIndex = const Value.absent(),
                 required String icon,
                 Value<bool> isActive = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
               }) => AccountsCompanion.insert(
                 id: id,
+                bank: bank,
                 name: name,
                 type: type,
                 balance: balance,
                 creditLimit: creditLimit,
+                lastDigit: lastDigit,
+                network: network,
+                expiryMonth: expiryMonth,
+                expiryYear: expiryYear,
+                statementDay: statementDay,
+                dueDay: dueDay,
                 paletteIndex: paletteIndex,
                 icon: icon,
                 isActive: isActive,
-                rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -1395,27 +1857,25 @@ typedef $$AccountsTableProcessedTableManager =
     >;
 typedef $$TransactionsTableCreateCompanionBuilder =
     TransactionsCompanion Function({
-      required String id,
-      required String accountId,
+      Value<int> id,
+      required int accountId,
       required String type,
       Value<String?> title,
       required String category,
       required double amount,
       required DateTime date,
       Value<DateTime> createdAt,
-      Value<int> rowid,
     });
 typedef $$TransactionsTableUpdateCompanionBuilder =
     TransactionsCompanion Function({
-      Value<String> id,
-      Value<String> accountId,
+      Value<int> id,
+      Value<int> accountId,
       Value<String> type,
       Value<String?> title,
       Value<String> category,
       Value<double> amount,
       Value<DateTime> date,
       Value<DateTime> createdAt,
-      Value<int> rowid,
     });
 
 final class $$TransactionsTableReferences
@@ -1426,7 +1886,7 @@ final class $$TransactionsTableReferences
       db.accounts.createAlias('transactions__account_id__accounts__id');
 
   $$AccountsTableProcessedTableManager get accountId {
-    final $_column = $_itemColumn<String>('account_id')!;
+    final $_column = $_itemColumn<int>('account_id')!;
 
     final manager = $$AccountsTableTableManager(
       $_db,
@@ -1449,7 +1909,7 @@ class $$TransactionsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<String> get id => $composableBuilder(
+  ColumnFilters<int> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnFilters(column),
   );
@@ -1517,7 +1977,7 @@ class $$TransactionsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<String> get id => $composableBuilder(
+  ColumnOrderings<int> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnOrderings(column),
   );
@@ -1585,7 +2045,7 @@ class $$TransactionsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<String> get id =>
+  GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
   GeneratedColumn<String> get type =>
@@ -1658,15 +2118,14 @@ class $$TransactionsTableTableManager
               $$TransactionsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<String> id = const Value.absent(),
-                Value<String> accountId = const Value.absent(),
+                Value<int> id = const Value.absent(),
+                Value<int> accountId = const Value.absent(),
                 Value<String> type = const Value.absent(),
                 Value<String?> title = const Value.absent(),
                 Value<String> category = const Value.absent(),
                 Value<double> amount = const Value.absent(),
                 Value<DateTime> date = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
               }) => TransactionsCompanion(
                 id: id,
                 accountId: accountId,
@@ -1676,19 +2135,17 @@ class $$TransactionsTableTableManager
                 amount: amount,
                 date: date,
                 createdAt: createdAt,
-                rowid: rowid,
               ),
           createCompanionCallback:
               ({
-                required String id,
-                required String accountId,
+                Value<int> id = const Value.absent(),
+                required int accountId,
                 required String type,
                 Value<String?> title = const Value.absent(),
                 required String category,
                 required double amount,
                 required DateTime date,
                 Value<DateTime> createdAt = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
               }) => TransactionsCompanion.insert(
                 id: id,
                 accountId: accountId,
@@ -1698,7 +2155,6 @@ class $$TransactionsTableTableManager
                 amount: amount,
                 date: date,
                 createdAt: createdAt,
-                rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
               .map(

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+
 import '../models/card_model.dart';
 import '../state/app_scope.dart';
 import '../theme/app_theme.dart';
 import '../widgets/credit_card_widget.dart';
 
 class AddCardScreen extends StatefulWidget {
-  const AddCardScreen({super.key});
+  final CardType type;
+  const AddCardScreen({super.key, required this.type});
 
   @override
   State<AddCardScreen> createState() => _AddCardScreenState();
@@ -18,7 +20,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
   final _limitController = TextEditingController();
   final _balanceController = TextEditingController(text: '0');
 
-  CardType _type = CardType.credit;
+  // CardType _type = CardType.credit;
   CardNetwork _network = CardNetwork.visa;
   int _expiryMonth = DateTime.now().month;
   int _expiryYear = DateTime.now().year + 3;
@@ -35,22 +37,6 @@ class _AddCardScreenState extends State<AddCardScreen> {
     _balanceController.dispose();
     super.dispose();
   }
-
-  CardModel get _previewCard => CardModel(
-        id: 'preview',
-        bank: _bankController.text.trim().isEmpty ? 'Your Bank' : _bankController.text.trim(),
-        holderName: _holderController.text.trim().isEmpty ? 'Card Holder' : _holderController.text.trim(),
-        last4: _safeLast4(),
-        network: _network,
-        type: _type,
-        expiryMonth: _expiryMonth,
-        expiryYear: _expiryYear,
-        creditLimit: _type == CardType.credit ? (double.tryParse(_limitController.text) ?? 0) : null,
-        currentBalance: double.tryParse(_balanceController.text) ?? 0,
-        statementDay: _statementDay,
-        dueDay: _dueDay,
-        gradient: AppColors.cardPalettes[_paletteIndex],
-      );
 
   String _safeLast4() {
     final digits = _last4Controller.text.trim();
@@ -70,28 +56,46 @@ class _AddCardScreenState extends State<AddCardScreen> {
       ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, 140),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            0,
+            AppSpacing.lg,
+            140,
+          ),
           children: [
-            AnimatedBuilder(
-              animation: Listenable.merge([_bankController, _holderController, _last4Controller]),
-              builder: (context, _) => CreditCardWidget(card: _previewCard),
-            ),
+            // AnimatedBuilder(
+            //   animation: Listenable.merge([
+            //     _bankController,
+            //     _holderController,
+            //     _last4Controller,
+            //   ]),
+            //   builder: (context, _) => CreditCardWidget(card: _previewCard),
+            // ),
             const SizedBox(height: 28),
-            _label(context, 'Card type'),
+            _label(context, 'Card color'),
             const SizedBox(height: 10),
+            _paletteSelector(),
+            // _label(context, 'Card type'),
+            // const SizedBox(height: 10),
             _typeToggle(),
             const SizedBox(height: 24),
             _label(context, 'Bank / issuer'),
             const SizedBox(height: 10),
-            _field(_bankController, hint: 'e.g. Meridian Bank'),
+            _field(context, _bankController, hint: 'e.g. Meridian Bank'),
             const SizedBox(height: 20),
             _label(context, 'Cardholder name'),
             const SizedBox(height: 10),
-            _field(_holderController, hint: 'e.g. Alex Rivera'),
+            _field(context, _holderController, hint: 'e.g. Alex Rivera'),
             const SizedBox(height: 20),
             _label(context, 'Last 4 digits'),
             const SizedBox(height: 10),
-            _field(_last4Controller, hint: '4821', maxLength: 4, numeric: true),
+            _field(
+              context,
+              _last4Controller,
+              hint: '4821',
+              maxLength: 4,
+              numeric: true,
+            ),
             const SizedBox(height: 20),
             _label(context, 'Network'),
             const SizedBox(height: 10),
@@ -111,46 +115,77 @@ class _AddCardScreenState extends State<AddCardScreen> {
                 Expanded(child: _yearDropdown()),
               ],
             ),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(child: _label(context, 'Statement day')),
-                Expanded(child: _label(context, _type == CardType.credit ? 'Due day' : 'Cycle reset day')),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(child: _dayDropdown(_statementDay, (v) => setState(() => _statementDay = v))),
-                const SizedBox(width: 12),
-                Expanded(child: _dayDropdown(_dueDay, (v) => setState(() => _dueDay = v))),
-              ],
-            ),
-            if (_type == CardType.credit) ...[
+
+            if (widget.type == CardType.credit) ...[
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(child: _label(context, 'Statement day')),
+                  Expanded(child: _label(context, 'Due day')),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: _dayDropdown(
+                      _statementDay,
+                      (v) => setState(() => _statementDay = v),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _dayDropdown(
+                      _dueDay,
+                      (v) => setState(() => _dueDay = v),
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 20),
               _label(context, 'Credit limit'),
               const SizedBox(height: 10),
-              _field(_limitController, hint: '5000', numeric: true, isAmount: true),
+              _field(
+                context,
+                _limitController,
+                hint: '5000',
+                numeric: true,
+                isAmount: true,
+              ),
               const SizedBox(height: 20),
               _label(context, 'Current outstanding balance'),
               const SizedBox(height: 10),
-              _field(_balanceController, hint: '0', numeric: true, isAmount: true),
-            ] else ...[
-              const SizedBox(height: 20),
-              _label(context, 'Spent this cycle'),
-              const SizedBox(height: 10),
-              _field(_balanceController, hint: '0', numeric: true, isAmount: true),
+              _field(
+                context,
+                _balanceController,
+                hint: '0',
+                numeric: true,
+                isAmount: true,
+              ),
             ],
-            const SizedBox(height: 24),
-            _label(context, 'Card color'),
-            const SizedBox(height: 10),
-            _paletteSelector(),
+            // else ...[
+            //   const SizedBox(height: 20),
+            //   _label(context, 'Spent this cycle'),
+            //   const SizedBox(height: 10),
+            //   _field(
+            //     context,
+            //     _balanceController,
+            //     hint: '0',
+            //     numeric: true,
+            //     isAmount: true,
+            //   ),
+            // ],
           ],
         ),
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.lg),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            0,
+            AppSpacing.lg,
+            AppSpacing.lg,
+          ),
           child: SizedBox(
             width: double.infinity,
             height: 52,
@@ -158,10 +193,15 @@ class _AddCardScreenState extends State<AddCardScreen> {
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.brass,
                 foregroundColor: const Color(0xFF14161C),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadii.button)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppRadii.button),
+                ),
               ),
               onPressed: _submit,
-              child: const Text('Save card', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+              child: const Text(
+                'Save card',
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+              ),
             ),
           ),
         ),
@@ -172,29 +212,44 @@ class _AddCardScreenState extends State<AddCardScreen> {
   Widget _label(BuildContext context, String text) =>
       Text(text, style: Theme.of(context).textTheme.titleMedium);
 
-  Widget _field(TextEditingController controller,
-      {required String hint, int? maxLength, bool numeric = false, bool isAmount = false}) {
+  Widget _field(
+    BuildContext context,
+    TextEditingController controller, {
+    required String hint,
+    int? maxLength,
+    bool numeric = false,
+    bool isAmount = false,
+  }) {
     return TextField(
       controller: controller,
       maxLength: maxLength,
       onChanged: (_) => setState(() {}),
-      keyboardType: numeric ? const TextInputType.numberWithOptions(decimal: true) : TextInputType.text,
-      style: const TextStyle(fontSize: 16, color: AppColors.ivory, fontWeight: FontWeight.w600),
+      keyboardType: numeric
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.text,
+      style: TextStyle(
+        fontSize: 16,
+        color: context.colors.ivory,
+        fontWeight: FontWeight.w600,
+      ),
       decoration: InputDecoration(
         counterText: '',
         prefixText: isAmount ? '\$ ' : null,
         hintText: hint,
-        hintStyle: const TextStyle(color: AppColors.ivoryFaint),
+        hintStyle: TextStyle(color: context.colors.ivoryFaint),
         filled: true,
-        fillColor: AppColors.surfaceRaised,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        fillColor: context.colors.surfaceRaised,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadii.button),
-          borderSide: const BorderSide(color: AppColors.hairline),
+          borderSide: BorderSide(color: context.colors.hairline),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadii.button),
-          borderSide: const BorderSide(color: AppColors.hairline),
+          borderSide: BorderSide(color: context.colors.hairline),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadii.button),
@@ -205,20 +260,29 @@ class _AddCardScreenState extends State<AddCardScreen> {
   }
 
   Widget _typeToggle() {
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceRaised,
-        borderRadius: BorderRadius.circular(AppRadii.pill),
-        border: Border.all(color: AppColors.hairline),
-      ),
-      child: Row(
-        children: [
-          _toggleOption('Credit', _type == CardType.credit, () => setState(() => _type = CardType.credit)),
-          _toggleOption('Debit', _type == CardType.debit, () => setState(() => _type = CardType.debit)),
-        ],
-      ),
-    );
+    return Container();
+    // return Container(
+    //   padding: const EdgeInsets.all(4),
+    //   decoration: BoxDecoration(
+    //     color: AppColors.surfaceRaised,
+    //     borderRadius: BorderRadius.circular(AppRadii.pill),
+    //     border: Border.all(color: AppColors.hairline),
+    //   ),
+    //   child: Row(
+    //     children: [
+    //       _toggleOption(
+    //         'Credit',
+    //         widget.type == CardType.credit,
+    //         () => setState(() => widget.type = CardType.credit),
+    //       ),
+    //       _toggleOption(
+    //         'Debit',
+    //         widget.type == CardType.debit,
+    //         () => setState(() => widget.type = CardType.debit),
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 
   Widget _toggleOption(String label, bool selected, VoidCallback onTap) {
@@ -258,9 +322,13 @@ class _AddCardScreenState extends State<AddCardScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
-              color: selected ? AppColors.brass.withOpacity(0.16) : AppColors.surfaceRaised,
+              color: selected
+                  ? AppColors.brass.withOpacity(0.16)
+                  : AppColors.surfaceRaised,
               borderRadius: BorderRadius.circular(AppRadii.pill),
-              border: Border.all(color: selected ? AppColors.brass : AppColors.hairline),
+              border: Border.all(
+                color: selected ? AppColors.brass : AppColors.hairline,
+              ),
             ),
             child: Text(
               n.label,
@@ -283,9 +351,17 @@ class _AddCardScreenState extends State<AddCardScreen> {
         isExpanded: true,
         underline: const SizedBox.shrink(),
         dropdownColor: AppColors.surfaceRaised,
-        style: const TextStyle(color: AppColors.ivory, fontWeight: FontWeight.w600),
+        style: const TextStyle(
+          color: AppColors.ivory,
+          fontWeight: FontWeight.w600,
+        ),
         items: List.generate(12, (i) => i + 1)
-            .map((m) => DropdownMenuItem(value: m, child: Text(m.toString().padLeft(2, '0'))))
+            .map(
+              (m) => DropdownMenuItem(
+                value: m,
+                child: Text(m.toString().padLeft(2, '0')),
+              ),
+            )
             .toList(),
         onChanged: (v) => setState(() => _expiryMonth = v ?? _expiryMonth),
       ),
@@ -300,8 +376,13 @@ class _AddCardScreenState extends State<AddCardScreen> {
         isExpanded: true,
         underline: const SizedBox.shrink(),
         dropdownColor: AppColors.surfaceRaised,
-        style: const TextStyle(color: AppColors.ivory, fontWeight: FontWeight.w600),
-        items: years.map((y) => DropdownMenuItem(value: y, child: Text(y.toString()))).toList(),
+        style: const TextStyle(
+          color: AppColors.ivory,
+          fontWeight: FontWeight.w600,
+        ),
+        items: years
+            .map((y) => DropdownMenuItem(value: y, child: Text(y.toString())))
+            .toList(),
         onChanged: (v) => setState(() => _expiryYear = v ?? _expiryYear),
       ),
     );
@@ -314,7 +395,10 @@ class _AddCardScreenState extends State<AddCardScreen> {
         isExpanded: true,
         underline: const SizedBox.shrink(),
         dropdownColor: AppColors.surfaceRaised,
-        style: const TextStyle(color: AppColors.ivory, fontWeight: FontWeight.w600),
+        style: const TextStyle(
+          color: AppColors.ivory,
+          fontWeight: FontWeight.w600,
+        ),
         items: List.generate(28, (i) => i + 1)
             .map((d) => DropdownMenuItem(value: d, child: Text('Day $d')))
             .toList(),
@@ -353,14 +437,22 @@ class _AddCardScreenState extends State<AddCardScreen> {
               height: 44,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: LinearGradient(colors: palette, begin: Alignment.topLeft, end: Alignment.bottomRight),
+                gradient: LinearGradient(
+                  colors: palette,
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 border: Border.all(
                   color: selected ? AppColors.brass : Colors.transparent,
                   width: 2.5,
                 ),
               ),
               child: selected
-                  ? const Icon(Icons.check_rounded, color: Colors.white, size: 18)
+                  ? const Icon(
+                      Icons.check_rounded,
+                      color: Colors.white,
+                      size: 18,
+                    )
                   : null,
             ),
           );
@@ -370,28 +462,50 @@ class _AddCardScreenState extends State<AddCardScreen> {
   }
 
   void _submit() {
-    if (_bankController.text.trim().isEmpty || _last4Controller.text.trim().length != 4) {
+    if (_bankController.text.trim().isEmpty ||
+        _last4Controller.text.trim().length != 4) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a bank name and 4-digit card number.')),
+        const SnackBar(
+          content: Text('Please enter a bank name and 4-digit card number.'),
+        ),
       );
       return;
     }
+
+    //  bank: bank,
+    //     name: name,
+    //     type: type,
+    //     balance: Value(balance),
+    //     creditLimit: Value(creditLimit),
+    //     lastDigit: Value(lastDigit),
+    //     network: network,
+    //     expiryMonth: Value(expiryMonth),
+    //     expiryYear: Value(expiryYear),
+    //     statementDay: Value(statementDay),
+    //     dueDay: Value(dueDay),
+    //     paletteIndex: Value(paletteIndex),
+    //     icon: icon,
+
     final state = AppScope.of(context);
     state.addCard(
       CardModel(
-        id: 'card_${DateTime.now().microsecondsSinceEpoch}',
         bank: _bankController.text.trim(),
-        holderName: _holderController.text.trim().isEmpty ? 'Card Holder' : _holderController.text.trim(),
-        last4: _last4Controller.text.trim(),
+        name: _holderController.text.trim().isEmpty
+            ? 'Card Holder'
+            : _holderController.text.trim(),
+        type: widget.type,
+        lastDigit: int.parse(_last4Controller.text.trim()),
         network: _network,
-        type: _type,
         expiryMonth: _expiryMonth,
         expiryYear: _expiryYear,
-        creditLimit: _type == CardType.credit ? (double.tryParse(_limitController.text) ?? 0) : null,
-        currentBalance: double.tryParse(_balanceController.text) ?? 0,
+        creditLimit: widget.type == CardType.credit
+            ? (double.tryParse(_limitController.text) ?? 0)
+            : null,
+        balance: double.tryParse(_balanceController.text) ?? 0,
         statementDay: _statementDay,
         dueDay: _dueDay,
-        gradient: AppColors.cardPalettes[_paletteIndex],
+        palettteIndex: _paletteIndex,
+        icon: '',
       ),
     );
     Navigator.pop(context);

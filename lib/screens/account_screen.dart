@@ -1,3 +1,4 @@
+import 'package:budget_tracker/models/card_model.dart';
 import 'package:flutter/material.dart';
 
 import '../state/app_scope.dart';
@@ -161,8 +162,11 @@ class _AccountScreenState extends State<AccountScreen> {
         ),
         InkWell(
           borderRadius: BorderRadius.circular(100),
-          onTap: () => Navigator.of(context)
-              .push(MaterialPageRoute(builder: (_) => const AddCardScreen())),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const AddCardScreen(type: CardType.credit),
+            ),
+          ),
           child: Container(
             width: 46,
             height: 46,
@@ -283,8 +287,11 @@ class _AccountScreenState extends State<AccountScreen> {
               ),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             ),
-            onPressed: () => Navigator.of(context)
-                .push(MaterialPageRoute(builder: (_) => const AddCardScreen())),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const AddCardScreen(type: CardType.debit),
+              ),
+            ),
             child: const Text(
               'Add a card',
               style: TextStyle(fontWeight: FontWeight.w700),

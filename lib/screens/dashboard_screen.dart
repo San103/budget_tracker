@@ -1,4 +1,5 @@
 import 'package:budget_tracker/database/app_database.dart';
+import 'package:budget_tracker/models/card_model.dart';
 import 'package:budget_tracker/screens/add_card_screen.dart';
 import 'package:budget_tracker/screens/add_transaction_screen.dart';
 import 'package:budget_tracker/screens/account_screen.dart';
@@ -17,6 +18,7 @@ class DashboardScreen extends StatelessWidget {
     final state = AppScope.of(context);
 
     final List<Account> accounts = state.accounts;
+
     final List<Account> creditAccounts = state.creditCards;
     // final transactions = state.transactions;
 
@@ -125,7 +127,7 @@ class DashboardScreen extends StatelessWidget {
 
                   const SizedBox(height: AppSpacing.sm),
 
-                  _buildAccounts(accounts),
+                  _buildAccounts(accounts, type: CardType.debit),
 
                   const SizedBox(height: AppSpacing.xl),
 
@@ -137,7 +139,7 @@ class DashboardScreen extends StatelessWidget {
 
                   const SizedBox(height: AppSpacing.sm),
 
-                  _buildAccounts(creditAccounts),
+                  _buildAccounts(creditAccounts, type: CardType.credit),
 
                   const SizedBox(height: AppSpacing.xl),
 
@@ -278,7 +280,7 @@ class DashboardScreen extends StatelessWidget {
   // ACCOUNTS
   // ---------------------------------------------------------------------------
 
-  Widget _buildAccounts(List<Account> accounts) {
+  Widget _buildAccounts(List<Account> accounts, {required CardType type}) {
     return LayoutBuilder(
       builder: (context, constraints) {
         const spacing = AppSpacing.sm;
@@ -312,7 +314,7 @@ class DashboardScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const AddCardScreen(),
+                      builder: (context) => AddCardScreen(type: type),
                     ),
                   );
                 },
